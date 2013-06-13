@@ -1,5 +1,6 @@
 html, body {
     height: 100%;
+    zoom: 1;
 }
 
 body {
@@ -45,8 +46,10 @@ body {
 
 #login-link {
     float: right;
-    font-size: 16px;
+    font-size: 14px;
     color: white;
+    margin-top: 10px;
+    margin-right: 10px;
 }
 
 #modal-login {
@@ -60,13 +63,14 @@ a {
 /* SideNav */
 #sidenav {
     background-color: rgba(0, 179, 236, 0.28);
+    max-width: 140px;
 }
 
 .navlist {
     list-style-type: none;
     padding-top: 10px;
     padding-bottom: 10px;
-    margin-left: 25px;
+    margin-left: 5px;
 }
 
 .navli {
@@ -83,10 +87,19 @@ a {
     color: rgb(51, 51, 51);
     display: block;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 200;
-    line-height: 25px;
-    padding-left: 60px;
-    padding-right: 60px;
-    padding-top: 60px;
+    line-height: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    height: 73%;
+}
+.row-fluid {
+    height: 100%;
+}
+
+.body {
+    overflow-y: auto;
+    max-height: 100%;
 }
