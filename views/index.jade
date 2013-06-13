@@ -1,0 +1,42 @@
+extends layout
+
+block content
+    a#login-link.btn.btn-link(href='#modal-login', role='button', data-toggle='modal') Login
+    span(id='header')
+        img(src='/images/gearlogo.jpg')
+    .container-fluid
+        .row-fluid
+            #sidenav.span2
+                    .navlist
+                        li.navli
+                            a.btn.btn-link(href='/#/about') About
+                        li.navli
+                            a.btn.btn-link(href='/#/methodology') Methodology
+                        li.navli
+                            a.btn.btn-link(href='/#/services') Services
+                        li.navli
+                            a.btn.btn-link(href='/#/clients') Clients
+                        li.navli
+                            a.btn.btn-link(href='/#/tools') Tools
+                        li.navli
+                            a.btn.btn-link(href='/#/bios') Bios
+                        li.navli
+                            a.btn.btn-link(href='/#/leed') LEED
+            <div class="body span10" ng-view></div>
+
+block footer
+    span(id='footer')
+        p ©2013 Gear Management Group
+
+block login
+    #modal-login.modal.hide.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+        .modal-header
+            button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+            h3#myModalLabel Please sign in
+        .modal-body
+            form.form-signin
+                input.input-block-level(type='text', placeholder='Email address')
+                input.input-block-level(type='password', placeholder='Password')
+        .modal-footer
+            button.btn(data-dismiss='modal', aria-hidden='true') Cancel
+            button.btn.btn-primary Login
