@@ -1,7 +1,7 @@
 html, body {
+    overflow: hidden;
     height: 100%;
     zoom: 1;
-    overflow: hidden;
 }
 
 body {
@@ -22,6 +22,14 @@ body {
     height: 160px;
     display: block;
     margin: 0 auto;
+}
+
+/* Divider */
+
+span.divider {
+    background-color: rgb(172, 168, 168);
+    display: block;
+    height: 5px;
 }
 
 /* Footer */
