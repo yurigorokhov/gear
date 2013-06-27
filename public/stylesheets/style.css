@@ -46,6 +46,12 @@ body {
 
 /* Login */
 
+/* Temporarily hide the login link */
+#login-link {
+    display: none;
+}
+
+/*
 #login-link {
     float: right;
     font-size: 14px;
@@ -53,6 +59,7 @@ body {
     margin-top: 10px;
     margin-right: 10px;
 }
+*/
 
 #modal-login {
     width: 512px;
