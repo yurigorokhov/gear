@@ -1,7 +1,7 @@
 html, body {
-    overflow: hidden;
     height: 100%;
     zoom: 1;
+    overflow-y: hidden;
 }
 
 body {
@@ -40,6 +40,12 @@ span.divider {
     text-align: center;
     line-height: 40px;
     margin: 0;
+}
+
+@media screen and (max-height: 600px) {
+    #footer-wrapper {
+        display: none;
+    }
 }
 
 #content-wrapper {
@@ -93,10 +99,19 @@ a {
     margin-left: 5px;
 }
 
-.navli {
-    padding-top: 6px;
-    padding-bottom: 6px;
+@media screen and (min-height: 560px) {
+    .navli {
+        padding-top: 6px;
+        padding-bottom: 6px;
+    }
 }
+
+@media screen and (max-width: 600px) {
+    #sidenav {
+        display: none;
+    }
+}
+
 .navli a {
     color: rgb(5, 73, 107);
     font: normal 18px Arial, Helvetica, sans-serif;
@@ -112,7 +127,7 @@ a {
     padding-left: 10px;
     padding-right: 10px;
     padding-top: 10px;
-    height: 73%;
+    height: 65%;
 }
 .row-fluid {
     height: 100%;
