@@ -3,22 +3,26 @@
  * Module dependencies.
  */
 
-var express = require('express')
-  , routes = require('./routes')
-  , user = require('./routes/user');
-
+Gear = {};
 http = require('http');
 path = require('path');
 fs = require('fs');
 _ = require('underscore');
 Parse = require('node-parse-api').Parse;
 Q = require('q');
+mime = require('mime');
+
+require('./api/api.js');
+var express = require('express')
+  , routes = require('./routes')
+  , user = require('./routes/user')
+  , files = require('./routes/files');
 
 // entities
 User = require('./entities/user').User;
 
 // load config
-var config = {};
+config = {};
 try {
     eval(fs.readFileSync('config.js', 'utf8'));
     console.log('read config from config.js');
@@ -49,8 +53,37 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
+// Error catching
+var wrap = function(func) {
+    return function(req, res) {
+        func(req, res).then(function(result) {
+            if(result instanceof Gear.File) {
+                res.writeHead(200, {
+                    'Content-Type': result.getMimeType(),
+                    'Content-Length': result.getSize(),
+                    'Content-Disposition': 'filename="'+ path.basename(result.getPath()) +'"'
+                });
+                var readStream = fs.createReadStream(result.getPath());
+                readStream.pipe(res);
+            } else {
+                res.send(result);
+            }
+        }).fail(function(error) {
+            if(error instanceof Gear.Error) {
+                res.send(error.getErrorCode(), error.getMessage());
+            } else {
+                res.send(500, 'An unknown error has occured');
+            }
+        })
+        .done();
+    };
+};
+
 app.get('/', routes.index);
 
+// files
+app.get('/@api/files/list', wrap(files.list));
+app.get('/@api/files/get', wrap(files.get));
 
 // Users
 app.post('/@api/users', user.create);
