@@ -8,7 +8,6 @@ http = require('http');
 path = require('path');
 fs = require('fs');
 _ = require('underscore');
-Parse = require('node-parse-api').Parse;
 Q = require('q');
 mime = require('mime');
 
@@ -34,7 +33,6 @@ try {
 
 // init app
 var app = express();
-parseApp = new Parse(config.parseAppId, config.parseMasterKey);
 
 // all environments
 app.set('port', process.env.PORT || 3000);
