@@ -6,7 +6,6 @@ html, body {
 
 body {
   margin: 0 0 0 0;
-  width: 100%;
   font: normal 12px/16px Arial, Helvetica, sans-serif;
   background-color: rgb(238, 238, 238);
 }
@@ -48,12 +47,10 @@ span.divider {
     }
 }
 
-#content-wrapper {
-    height: 94%;
-}
-
 #footer-wrapper {
-    height: 6%;
+    width: 100%;
+    position: fixed;
+    bottom: 0px;
     background-color: rgb(0, 158, 223);
     background-color: rgba(0, 158, 223, .6);
 }
@@ -121,15 +118,9 @@ a {
     padding-left: 10px;
     padding-right: 10px;
     padding-top: 10px;
-    height: 65%;
 }
 .row-fluid {
     height: 100%;
-}
-
-.body {
-    overflow-y: auto;
-    max-height: 100%;
 }
 
 /* File Browser */

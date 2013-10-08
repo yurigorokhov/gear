@@ -11,6 +11,7 @@
     "node-parse-api": "0.1.9",
     "underscore": "1.4.4",
     "q": "0.9.4",
-    "mime": "1.2.11"
+    "mime": "1.2.11",
+    "mongojs": "0.9.6"
   }
 }

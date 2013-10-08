@@ -20,3 +20,4 @@ _(Gear).extend({
 require('./error.js');
 require('./file.js');
 require('./files.js');
+require('./users.js');

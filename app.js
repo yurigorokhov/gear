@@ -21,7 +21,11 @@ var express = require('express')
 User = require('./entities/user').User;
 
 // load config
-config = {};
+config = {
+    mongo: {
+        dburl: 'localhost/gear'
+    }
+};
 try {
     eval(fs.readFileSync('config.js', 'utf8'));
     console.log('read config from config.js');
@@ -30,6 +34,7 @@ try {
     console.log('config.js does not exist (' + e.message + ')');
     process.exit(1);
 }
+db = require('mongojs').connect(config.mongo.dburl, ['users']);
 
 // init app
 var app = express();
@@ -85,7 +90,8 @@ app.get('/@api/files/list', wrap(files.list));
 app.get('/@api/files/get', wrap(files.get));
 
 // Users
-app.post('/@api/users', user.create);
+//app.post('/@api/users', user.create);
+app.get('/@api/users', wrap(user.list));
 
 app.get('/*', function(req, res) {
     res.redirect('/');

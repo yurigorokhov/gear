@@ -9,3 +9,13 @@ exports.create = function(req, res) {
         res.send(err);
     });
 };
+
+exports.list = function(req, res) {
+    var def = Q.defer();
+    Gear.Users.getUserList().then(function(list) {
+        def.resolve(list);
+    }).fail(function(error) {
+        def.reject(error);
+    });
+    return def.promise;
+};
