@@ -21,6 +21,7 @@ html(ng-app='gear-browser')
                             th File Name
                             th File Type
                             th File Size (bytes)
+                            th Actions
                     tbody
                         tr(ng-repeat='file in files')
                             td
@@ -29,6 +30,16 @@ html(ng-app='gear-browser')
                                 a.btn(href="#", ng-click='navigate(path + "/" + file.name)', ng-class='!file.isDirectory ? "disabled": ""') {{ file.name }}
                             td {{ file.isDirectory ? 'Directory' : file.mime }}
                             td {{ file.size }}
+                            td
+                                .btn-group(ng-show="!file.isDirectory")
+                                    button.btn.btn-default.dropdown-toggle(data-toggle="dropdown") Actions
+                                        span.caret
+                                    ul.dropdown-menu(role="menu")
+                                        li
+                                            a(ng-href="{{file.href}}") Download
+                                            a(href="#") Upload New Version
+                                            a(href="#") Move
+
         script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.2/jquery.min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/angular.js/1.1.5/angular.min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js')

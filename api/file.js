@@ -12,5 +12,8 @@ _(Gear.File.prototype).extend({
     },
     getPath: function() {
         return this._path;
+    },
+    getRelativePath: function() {
+        return Gear.Files.getRelativePath(this._path);
     }
 });

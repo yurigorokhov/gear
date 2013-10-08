@@ -6,6 +6,10 @@ _(Gear.Files).extend({
         return path.join(config.dataFolder, pathParam);
     },
 
+    getRelativePath: function(fullPath) {
+        return path.relative(config.dataFolder, fullPath);
+    },
+
     pathExists: function(path) {
         var def = Q.defer();
         fs.exists(path, function(exists) {
@@ -36,7 +40,8 @@ _(Gear.Files).extend({
                         name: f,
                         size: stats.size,
                         mime: mime.lookup(path.join(dirPath, f)),
-                        isDirectory: stats.isDirectory()
+                        isDirectory: stats.isDirectory(),
+                        href: '/@api/files/get?path=' + encodeURIComponent(encodeURIComponent(Gear.Files.getRelativePath(path.join(dirPath, f))))
                     };
                 });
                  def.resolve(result);
