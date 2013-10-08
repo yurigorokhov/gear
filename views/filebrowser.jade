@@ -8,7 +8,7 @@ html(ng-app='gear-browser')
         a#login-link(href='/', role='button', data-toggle='modal') Main Site
         span(id='header')
             img(height='160', width='289', src='/images/gearlogo.jpg')
-        .main(ng-controller='FilesCtrl')
+        .filebrowser(ng-controller='FilesCtrl')
             h3 File Browser
             .files
                 ol.breadcrumb
@@ -37,11 +37,11 @@ html(ng-app='gear-browser')
                                     ul.dropdown-menu(role="menu")
                                         li
                                             a(ng-href="{{file.href}}") Download
-                                            a(href="#") Upload New Version
-                                            a(href="#") Move
+                                            a Upload New Version
+                                            a Move
 
-        script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.2/jquery.min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/angular.js/1.1.5/angular.min.js')
+        script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.2/jquery.min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/underscore.string/2.3.3/underscore.string.min.js')
         script(src='/javascripts/bootstrap.min.js')

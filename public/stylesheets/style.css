@@ -131,3 +131,10 @@ a {
     overflow-y: auto;
     max-height: 100%;
 }
+
+/* File Browser */
+.filebrowser {
+    width: 95%;
+    margin-left: 2%;
+    margin-right: 2%;
+}
