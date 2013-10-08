@@ -24,16 +24,18 @@ _(Gear.Files).extend({
         return def.promise;
     },
 
-    readDir: function(path) {
+    readDir: function(dirPath) {
         var def = Q.defer();
-        fs.readdir(path, function(err, files) {
+        fs.readdir(dirPath, function(err, files) {
             if(err) {
                  def.reject(err);
              } else {
-                var result = _(files).map(function(file) {
-                    var stats = fs.statSync(path + '/' + file);
+                var result = _(files).map(function(f) {
+                    var stats = fs.statSync(path.join(dirPath, f));
                     return {
-                        name: file,
+                        name: f,
+                        size: stats.size,
+                        mime: mime.lookup(path.join(dirPath, f)),
                         isDirectory: stats.isDirectory()
                     };
                 });

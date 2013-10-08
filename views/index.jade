@@ -5,9 +5,9 @@ block content
     span(id='header')
         img(height='160', width='289', src='/images/gearlogo.jpg')
     span.divider
-    .container-fluid
-        .row-fluid
-            #sidenav.span2
+    .container
+        .row
+            #sidenav.col-md-2
                     ul.navlist
                         li.navli
                             a.btn.btn-link(href='/#/about') About
@@ -23,7 +23,7 @@ block content
                             a.btn.btn-link(href='/#/bios') Bios
                         li.navli
                             a.btn.btn-link(href='/#/leed') LEED
-            <div class="body span10" ng-view></div>
+            <div class="body col-md-10" ng-view></div>
 
 block footer
     span.divider

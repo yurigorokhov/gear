@@ -1,0 +1,75 @@
+doctype 5
+html(ng-app='gear-browser')
+    head
+        title= title
+        link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
+        link(rel='stylesheet', href='/stylesheets/style.css')
+    body
+        a#login-link(href='/', role='button', data-toggle='modal') Main Site
+        span(id='header')
+            img(height='160', width='289', src='/images/gearlogo.jpg')
+        .main(ng-controller='FilesCtrl')
+            h3 File Browser
+            .files
+                ol.breadcrumb
+                    li(ng-repeat="segment in segments", ng-class='$last ? "active" : ""')
+                        a(href="#", ng-click="navigate(segment.path)") {{ segment.name }}
+                table.table.table-hover
+                    thead
+                        tr
+                            th
+                            th File Name
+                            th File Type
+                            th File Size (bytes)
+                    tbody
+                        tr(ng-repeat='file in files')
+                            td
+                                span(ng-class='file.isDirectory ? "glyphicon glyphicon-folder-open": "glyphicon glyphicon-file"')
+                            td
+                                a.btn(href="#", ng-click='navigate(path + "/" + file.name)', ng-class='!file.isDirectory ? "disabled": ""') {{ file.name }}
+                            td {{ file.isDirectory ? 'Directory' : file.mime }}
+                            td {{ file.size }}
+        script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.2/jquery.min.js')
+        script(src='//cdnjs.cloudflare.com/ajax/libs/angular.js/1.1.5/angular.min.js')
+        script(src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js')
+        script(src='//cdnjs.cloudflare.com/ajax/libs/underscore.string/2.3.3/underscore.string.min.js')
+        script(src='/javascripts/bootstrap.min.js')
+        script
+            _.mixin(_.str.exports());
+            _.mixin({
+                combinations: function(arr, accum) {
+                    if(!accum) {
+                        accum = [arr[0]];
+                        return _.combinations(_(arr).rest(1), accum);
+                    }
+                    if(_(arr).isEmpty()) return accum;
+                    accum.push( _.union(_(accum).last(1)[0], arr[0]) );
+                    return _.combinations(_(arr).rest(1), accum);
+                }
+            });
+            var FilesCtrl = function($scope, $http) {
+                $scope.path = '';
+                $scope.segments = [ { name: 'Home', path: '' } ];
+                $scope.navigate = function(newPath) {
+                    $scope.path = newPath;
+                    $scope.segments = [ { name: 'Home', path: '' } ];
+                    $scope.segments = _.union($scope.segments, _($scope.path).chain().words('/').combinations().map(function(arr) {
+                        return {
+                            path: _(arr).isArray() ? '/' + arr.join('/') : '/' + arr,
+                            name: _(arr).isArray() ? _(arr).last(1)[0] : arr
+                        }
+                    }).value());
+                    $scope.fetchFiles();
+                };
+                $scope.fetchFiles = function() {
+                    $http({method: 'GET', url: '/@api/files/list', params: {path: encodeURIComponent($scope.path)}}).success(function(data) {
+                        $scope.files = data;
+                    }).error(function(data) {
+                                    //TODO
+                    });
+                }
+                $scope.fetchFiles();
+            };
+            angular.module('gear-browser', []).
+                config(['$routeProvider', function($routeProvider) {
+            }]);

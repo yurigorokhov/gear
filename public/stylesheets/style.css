@@ -90,6 +90,7 @@ a {
     padding-top: 10px;
     padding-bottom: 10px;
     margin-left: 5px;
+    padding-left: 0px;
 }
 
 @media screen and (min-height: 560px) {

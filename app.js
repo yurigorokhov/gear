@@ -80,6 +80,7 @@ var wrap = function(func) {
 };
 
 app.get('/', routes.index);
+app.get('/filebrowser', routes.filebrowser);
 
 // files
 app.get('/@api/files/list', wrap(files.list));
