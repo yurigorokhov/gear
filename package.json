@@ -10,8 +10,10 @@
     "jade": "*",
     "node-parse-api": "0.1.9",
     "underscore": "1.4.4",
+    "underscore.string": "2.3.3",
     "q": "0.9.4",
     "mime": "1.2.11",
-    "mongojs": "0.9.6"
+    "mongojs": "0.9.6",
+    "crypto": "0.0.3"
   }
 }

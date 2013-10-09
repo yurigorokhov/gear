@@ -10,6 +10,8 @@ fs = require('fs');
 _ = require('underscore');
 Q = require('q');
 mime = require('mime');
+crypto = require('crypto');
+_.mixin(require('underscore.string').exports());
 
 require('./api/api.js');
 var express = require('express')
@@ -90,7 +92,8 @@ app.get('/@api/files/list', wrap(files.list));
 app.get('/@api/files/get', wrap(files.get));
 
 // Users
-//app.post('/@api/users', user.create);
+app.post('/@api/users', wrap(user.create));
+app.get('/@api/users/login', wrap(user.login));
 app.get('/@api/users', wrap(user.list));
 
 app.get('/*', function(req, res) {

@@ -17,7 +17,9 @@ _(Gear).extend({
         return currentNode;
     }
 });
+require('./utils.js');
 require('./error.js');
 require('./file.js');
+require('./user.js');
 require('./files.js');
 require('./users.js');
