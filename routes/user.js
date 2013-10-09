@@ -37,3 +37,9 @@ exports.login = function(req, res) {
     }
     return def.promise;
 };
+
+exports.current = function(req, res) {
+    var def = Q.defer();
+    def.resolve(req.gearContext.currentUser.toResponseObject());
+    return def.promise;
+};

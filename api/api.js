@@ -17,6 +17,7 @@ _(Gear).extend({
         return currentNode;
     }
 });
+require('./authtokens.js');
 require('./utils.js');
 require('./error.js');
 require('./file.js');

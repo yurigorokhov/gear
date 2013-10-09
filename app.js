@@ -36,7 +36,7 @@ try {
     console.log('config.js does not exist (' + e.message + ')');
     process.exit(1);
 }
-db = require('mongojs').connect(config.mongo.dburl, ['users']);
+db = require('mongojs').connect(config.mongo.dburl, ['users', 'authtokens']);
 
 // init app
 var app = express();
@@ -49,6 +49,7 @@ app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.bodyParser());
 app.use(express.methodOverride());
+app.use(express.cookieParser());
 app.use(express.compress());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(app.router);
@@ -61,26 +62,31 @@ if ('development' == app.get('env')) {
 // Error catching
 var wrap = function(func) {
     return function(req, res) {
-        func(req, res).then(function(result) {
-            if(result instanceof Gear.File) {
-                res.writeHead(200, {
-                    'Content-Type': result.getMimeType(),
-                    'Content-Length': result.getSize(),
-                    'Content-Disposition': 'filename="'+ path.basename(result.getPath()) +'"'
+        req.gearContext = {};
+        Gear.Users.getCurrentUser(req.cookies.authtoken).then(function(user) {
+            req.gearContext.currentUser = user;
+            func(req, res).then(function(result) {
+                if(result instanceof Gear.File) {
+                    res.writeHead(200, {
+                        'Content-Type': result.getMimeType(),
+                        'Content-Length': result.getSize(),
+                        'Content-Disposition': 'filename="'+ path.basename(result.getPath()) +'"'
+                    });
+                    var readStream = fs.createReadStream(result.getPath());
+                    readStream.pipe(res);
+                } else {
+                    res.send(result);
+                }
+            }).fail(function(error) {
+                    if(error instanceof Gear.Error) {
+                        res.send(error.getErrorCode(), error.getMessage());
+                    } else {
+                        res.send(500, 'An unknown error has occured');
+                    }
                 });
-                var readStream = fs.createReadStream(result.getPath());
-                readStream.pipe(res);
-            } else {
-                res.send(result);
-            }
-        }).fail(function(error) {
-            if(error instanceof Gear.Error) {
-                res.send(error.getErrorCode(), error.getMessage());
-            } else {
-                res.send(500, 'An unknown error has occured');
-            }
-        })
-        .done();
+        }).fail(function() {
+            res.send(500, 'An unknown error has occured');
+        });
     };
 };
 
@@ -93,6 +99,7 @@ app.get('/@api/files/get', wrap(files.get));
 
 // Users
 app.post('/@api/users', wrap(user.create));
+app.get('/@api/users/current', wrap(user.current));
 app.get('/@api/users/login', wrap(user.login));
 app.get('/@api/users', wrap(user.list));
 

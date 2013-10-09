@@ -32,6 +32,26 @@ _(Gear.Users).extend({
         return def.promise;
     },
 
+    getCurrentUser: function(authtoken) {
+        var def = Q.defer();
+        if(!authtoken) {
+            def.resolve(Gear.User.getAnonymous());
+        } else {
+            Gear.Authtokens.getUserName(authtoken).then(function(username) {
+                if(!username) {
+                    def.resolve(Gear.User.getAnonymous());
+                } else {
+                    Gear.Users.getUser(username).then(function(user) {
+                        def.resolve(user);
+                    }).fail(function(err) {
+                            def.reject(err);
+                        });
+                }
+            });
+        }
+        return def.promise;
+    },
+
     createUser: function(data) {
         var def = Q.defer();
         Gear.Users.getUser(data.username).then(function(user) {
@@ -67,9 +87,11 @@ _(Gear.Users).extend({
                 // Attempt to find the user
                 Gear.Users.getUser(username).then(function(user) {
                     if(user.authenticateWithHash(encodePassword(password))) {
-
-                        //TODO: generate authtoken
-                        def.resolve('YES');
+                        Gear.Authtokens.getAuthtokenForUser(user.getUserName()).then(function(authtoken) {
+                            def.resolve(authtoken);
+                        }).fail(function() {
+                            def.reject(new Gear.Error('There was a problem logging the user in'));
+                        });
                     } else {
                         def.reject(new Gear.Error('Failed to log in', 401));
                     }
