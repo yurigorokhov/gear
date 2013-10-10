@@ -19,6 +19,7 @@ app.all('*', function(req, res) {
                 port: 3000,
                 path: uri.pathname + uri.search,
                 method: req.method,
+                headers: {authorization: req.headers.authorization}
             }, function(proxy_response) {
                 proxy_response.pipe(res);
                 res.writeHead(proxy_response.statusCode, proxy_response.headers);
