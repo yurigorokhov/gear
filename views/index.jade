@@ -3,30 +3,28 @@ extends layout
 block login
     if context.currentUser._anonymous
         a#login-link.top-link(href='#modal-login', role='button', data-toggle='modal') Login
-            #modal-login.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-                .modal-dialog
-                    .modal-content
-                        .modal-header
-                            button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                            h4#myModalLabel Please sign in
-                        .modal-body
-                            #loading(ng-show='loading')
-                                img(src='/images/anim-large-circle.gif')
-                            form.form-signin(role="form", ng-show='!loading')
-                                .form-group
-                                    label(for="username") Username
-                                    input.form-control#username(type='text', placeholder='Email address', ng-model="login.username")
-                                .form-group
-                                    label(for="username") Password
-                                    input.form-control#password(type='password', placeholder='Password', ng-model="login.password")
-                            .alert.alert-danger(ng-show='loginfailed')
-                                p Login failed!
-                        .modal-footer
-                            button.btn(data-dismiss='modal', aria-hidden='true') Cancel
-                            button.btn.btn-primary(ng-click="login(login.username, login.password)") Login
+        #modal-login.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                        h4#myModalLabel Please sign in
+                    .modal-body
+                        form.form-signin(role='form')
+                            .form-group
+                                label(for='username') Username
+                                input.form-control#username(type='text', placeholder='Email address', ng-model="login.username")
+                            .form-group
+                                label(for='username') Password
+                                input.form-control#password(type='password', placeholder='Password', ng-model="login.password")
+                        .alert.alert-danger(ng-show='loginfailed')
+                            p Login failed!
+                    .modal-footer
+                        button.btn.btn-default(type='button', data-dismiss='modal', aria-hidden='true') Cancel
+                        button.btn.btn-primary(ng-click="login(login.username, login.password)") Login
     else
         a.top-link(href="#", ng-click="logout()") Logout
-        a#login-link.top-link(href="/filebrowser") My Vault
+        a.top-link(href="/filebrowser") My Vault
 
 block content
     span(id='header')

@@ -1,13 +1,14 @@
-/*
- * POST user
- */
 exports.create = function(req, res) {
     var def = Q.defer();
-    Gear.Users.createUser(req.body).then(function(user) {
-        def.resolve(user.toResponseObject());
-    }).fail(function(err) {
-        def.reject(err);
-    });
+    if(!req.gearContext.currentUser._admin) {
+        def.reject(new Gear.Error('You must be an administrator to create users', 403));
+    } else {
+        Gear.Users.createUser(req.body).then(function(user) {
+            def.resolve(user.toResponseObject());
+        }).fail(function(err) {
+                def.reject(err);
+        });
+    }
     return def.promise;
 };
 

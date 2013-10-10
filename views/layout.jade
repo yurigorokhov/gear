@@ -18,29 +18,25 @@ html(ng-app='gear')
                 angular.module('gear', ['ngCookies']).
                   config(['$routeProvider', function($routeProvider) {
                   $routeProvider.
-                      when('/about', {templateUrl: 'partials/about.html',   controller: CommonCtrl}).
-                      when('/methodology', {templateUrl: 'partials/methodology.html',   controller: CommonCtrl}).
-                      when('/services', {templateUrl: 'partials/services.html',   controller: CommonCtrl}).
-                      when('/clients', {templateUrl: 'partials/clients.html',   controller: CommonCtrl}).
-                      when('/tools', {templateUrl: 'partials/tools.html',   controller: CommonCtrl}).
-                      when('/bios', {templateUrl: 'partials/bios.html',   controller: CommonCtrl}).
-                      when('/leed', {templateUrl: 'partials/leed.html',   controller: CommonCtrl}).
+                      when('/about', {templateUrl: 'partials/about.html' }).
+                      when('/methodology', {templateUrl: 'partials/methodology.html' }).
+                      when('/services', {templateUrl: 'partials/services.html' }).
+                      when('/clients', {templateUrl: 'partials/clients.html' }).
+                      when('/tools', {templateUrl: 'partials/tools.html' }).
+                      when('/bios', {templateUrl: 'partials/bios.html' }).
+                      when('/leed', {templateUrl: 'partials/leed.html' }).
                       otherwise({redirectTo: '/about'});
                 }]);
                 function CommonCtrl($scope, $cookies, $http) {
-                    $scope.loading = false;
                     $scope.loginfailed = false;
                     $scope.login = function(username, password) {
-                        $scope.loading = true;
                         $scope.loginfailed = false;
                         $http({method: 'GET', url: '/@api/users/login', headers: { authorization: 'Basic ' + btoa(username + ':' + password) }}).success(function(authtoken) {
                             $scope.loginfailed = false;
-                            $scope.loading = false;
                             $cookies.authtoken = authtoken;
                             window.location.reload();
                         }).error(function(data) {
                             $scope.loginfailed = true;
-                            $scope.loading = false;
                         });
                     };
                     $scope.logout = function() {
