@@ -4,8 +4,15 @@
  */
 
 exports.index = function(req, res) {
-  res.render('index', { title: 'Gear Management Group' });
+  res.render('index', { title: 'Gear Management Group', context: req.gearContext });
 };
 exports.filebrowser = function(req, res) {
-    res.render('filebrowser', { title: 'Gear Management Group - File Browser' });
+    if(req.gearContext.currentUser._anonymous) {
+        res.writeHead(302, {
+            'Location': '/'
+        });
+        res.end();
+    } else {
+        res.render('filebrowser', { title: 'Gear Management Group - File Browser' });
+    }
 };

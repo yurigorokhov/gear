@@ -5,7 +5,9 @@ html(ng-app='gear-browser')
         link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
         link(rel='stylesheet', href='/stylesheets/style.css')
     body
-        a#login-link(href='/', role='button', data-toggle='modal') Main Site
+        .menu(ng-controller="menuCtrl")
+            a.top-link(href='#', ng-click='logout()') Logout
+            a.top-link(href='/') Main Site
         span(id='header')
             img(height='160', width='289', src='/images/gearlogo.jpg')
         .filebrowser(ng-controller='FilesCtrl')
@@ -41,6 +43,7 @@ html(ng-app='gear-browser')
                                             a Move
 
         script(src='//cdnjs.cloudflare.com/ajax/libs/angular.js/1.1.5/angular.min.js')
+        script(src='//code.angularjs.org/1.0.0rc10/angular-cookies-1.0.0rc10.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.2/jquery.min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/underscore.string/2.3.3/underscore.string.min.js')
@@ -58,6 +61,12 @@ html(ng-app='gear-browser')
                     return _.combinations(_(arr).rest(1), accum);
                 }
             });
+            var menuCtrl = function($scope, $cookies) {
+                $scope.logout = function() {
+                    $cookies.authtoken = 'null';
+                    window.location.reload();
+                };
+            };
             var FilesCtrl = function($scope, $http) {
                 $scope.path = '';
                 $scope.segments = [ { name: 'Home', path: '' } ];
@@ -81,6 +90,6 @@ html(ng-app='gear-browser')
                 }
                 $scope.fetchFiles();
             };
-            angular.module('gear-browser', []).
+            angular.module('gear-browser', ['ngCookies']).
                 config(['$routeProvider', function($routeProvider) {
             }]);

@@ -60,38 +60,43 @@ if ('development' == app.get('env')) {
 }
 
 // Error catching
-var wrap = function(func) {
+var wrap = function(func, render) {
+    var render = render || false;
     return function(req, res) {
         req.gearContext = {};
         Gear.Users.getCurrentUser(req.cookies.authtoken).then(function(user) {
             req.gearContext.currentUser = user;
-            func(req, res).then(function(result) {
-                if(result instanceof Gear.File) {
-                    res.writeHead(200, {
-                        'Content-Type': result.getMimeType(),
-                        'Content-Length': result.getSize(),
-                        'Content-Disposition': 'filename="'+ path.basename(result.getPath()) +'"'
-                    });
-                    var readStream = fs.createReadStream(result.getPath());
-                    readStream.pipe(res);
-                } else {
-                    res.send(result);
-                }
-            }).fail(function(error) {
+            if(render) {
+                func(req, res);
+            } else {
+                func(req, res).then(function(result) {
+                    if(result instanceof Gear.File) {
+                        res.writeHead(200, {
+                            'Content-Type': result.getMimeType(),
+                            'Content-Length': result.getSize(),
+                            'Content-Disposition': 'filename="'+ path.basename(result.getPath()) +'"'
+                        });
+                        var readStream = fs.createReadStream(result.getPath());
+                        readStream.pipe(res);
+                    } else {
+                        res.send(result);
+                    }
+                }).fail(function(error) {
                     if(error instanceof Gear.Error) {
                         res.send(error.getErrorCode(), error.getMessage());
                     } else {
-                        res.send(500, 'An unknown error has occured');
+                        res.send(500, 'An unknown error has occurred');
                     }
                 });
+            }
         }).fail(function() {
-            res.send(500, 'An unknown error has occured');
+            res.send(500, 'An unknown error has occurred');
         });
     };
 };
 
-app.get('/', routes.index);
-app.get('/filebrowser', routes.filebrowser);
+app.get('/', wrap(routes.index, true));
+app.get('/filebrowser', wrap(routes.filebrowser, true));
 
 // files
 app.get('/@api/files/list', wrap(files.list));

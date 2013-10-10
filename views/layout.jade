@@ -5,27 +5,46 @@ html(ng-app='gear')
         link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
         link(rel='stylesheet', href='/stylesheets/style.css')
     body
-        #content-wrapper
+        #content-wrapper(ng-controller="CommonCtrl")
             block login
             block content
         #footer-wrapper
             block footer
             script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.2/jquery.min.js')
             script(src='//cdnjs.cloudflare.com/ajax/libs/angular.js/1.1.5/angular.min.js')
+            script(src='//code.angularjs.org/1.0.0rc10/angular-cookies-1.0.0rc10.js')
             script(src='/javascripts/bootstrap.min.js')
             script
-                angular.module('gear', []).
+                angular.module('gear', ['ngCookies']).
                   config(['$routeProvider', function($routeProvider) {
                   $routeProvider.
-                      when('/about', {templateUrl: 'partials/about.html',   controller: AboutCtrl}).
-                      when('/methodology', {templateUrl: 'partials/methodology.html',   controller: MethodologyCtrl}).
-                      when('/services', {templateUrl: 'partials/services.html',   controller: MethodologyCtrl}).
-                      when('/clients', {templateUrl: 'partials/clients.html',   controller: MethodologyCtrl}).
-                      when('/tools', {templateUrl: 'partials/tools.html',   controller: MethodologyCtrl}).
-                      when('/bios', {templateUrl: 'partials/bios.html',   controller: MethodologyCtrl}).
-                      when('/leed', {templateUrl: 'partials/leed.html',   controller: MethodologyCtrl}).
+                      when('/about', {templateUrl: 'partials/about.html',   controller: CommonCtrl}).
+                      when('/methodology', {templateUrl: 'partials/methodology.html',   controller: CommonCtrl}).
+                      when('/services', {templateUrl: 'partials/services.html',   controller: CommonCtrl}).
+                      when('/clients', {templateUrl: 'partials/clients.html',   controller: CommonCtrl}).
+                      when('/tools', {templateUrl: 'partials/tools.html',   controller: CommonCtrl}).
+                      when('/bios', {templateUrl: 'partials/bios.html',   controller: CommonCtrl}).
+                      when('/leed', {templateUrl: 'partials/leed.html',   controller: CommonCtrl}).
                       otherwise({redirectTo: '/about'});
                 }]);
-
-                function AboutCtrl($scope, $routeParams) { }
-                function MethodologyCtrl($scope, $routeParams) { }
+                function CommonCtrl($scope, $cookies, $http) {
+                    $scope.loading = false;
+                    $scope.loginfailed = false;
+                    $scope.login = function(username, password) {
+                        $scope.loading = true;
+                        $scope.loginfailed = false;
+                        $http({method: 'GET', url: '/@api/users/login', headers: { authorization: 'Basic ' + btoa(username + ':' + password) }}).success(function(authtoken) {
+                            $scope.loginfailed = false;
+                            $scope.loading = false;
+                            $cookies.authtoken = authtoken;
+                            window.location.reload();
+                        }).error(function(data) {
+                            $scope.loginfailed = true;
+                            $scope.loading = false;
+                        });
+                    };
+                    $scope.logout = function() {
+                        $cookies.authtoken = 'null';
+                        window.location.reload();
+                    };
+                };

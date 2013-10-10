@@ -57,7 +57,7 @@ span.divider {
 
 /* Login */
 
-#login-link {
+.top-link {
     float: right;
     font-size: 14px;
     color: white;
@@ -65,8 +65,8 @@ span.divider {
     margin-right: 10px;
 }
 
-#modal-login {
-    width: 512px;
+#loading {
+    text-align: center;
 }
 
 a {
