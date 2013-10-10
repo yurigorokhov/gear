@@ -4,7 +4,7 @@ block login
     if context.currentUser._anonymous
         a#login-link.top-link(href='#modal-login', role='button', data-toggle='modal') Login
         #modal-login.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-            .modal-dialog
+            .modal-dialog(ng-keypress="keypress($event, login.username, login.password)")
                 .modal-content
                     .modal-header
                         button.close(type='button', data-dismiss='modal', aria-hidden='true') ×

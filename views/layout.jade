@@ -43,4 +43,9 @@ html(ng-app='gear')
                         $cookies.authtoken = 'null';
                         window.location.reload();
                     };
+                    $scope.keypress = function(event, username, password) {
+                        if(event.keyCode === 13) {
+                            $scope.login(username, password);
+                        }
+                    };
                 };
