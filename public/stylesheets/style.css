@@ -74,33 +74,26 @@ a {
 }
 
 /* SideNav */
-#sidenav {
+
+.navlist {
     background-color: rgb(12, 101, 235);
     background-color: rgba(12, 101, 235, 0.28);
     max-width: 155px;
     border-radius: 15px;
     margin-top: 60px;
-}
-
-.navlist {
     list-style-type: none;
     padding-top: 10px;
     padding-bottom: 10px;
     margin-left: 5px;
     padding-left: 0px;
 }
-
-@media screen and (min-height: 560px) {
-    .navli {
-        padding-top: 6px;
-        padding-bottom: 6px;
-    }
+#sidenav {
+    margin-top: 60px;
 }
 
-@media screen and (max-width: 700px) {
-    #sidenav {
-        display: none;
-    }
+/* Body */
+.body {
+    margin-top: 60px;
 }
 
 .navli a {
@@ -108,10 +101,6 @@ a {
     font: normal 18px Arial, Helvetica, sans-serif;
 }
 
-/* Body */
-.body {
-    margin-top: 60px;
-}
 
 .container-fluid {
     background-color: rgb(238, 238, 238);
@@ -132,4 +121,21 @@ a {
     width: 95%;
     margin-left: 2%;
     margin-right: 2%;
+}
+
+/* Horizontal View */
+
+@media screen and (max-width: 1000px) {
+    #sidenav {
+        display: inline;
+    }
+    .navlist {
+        max-width: 100%;
+    }
+    .navli {
+        display: inline;
+    }
+    .body {
+        margin-top: 0px;
+    }
 }
