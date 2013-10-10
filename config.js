@@ -1,3 +1,0 @@
-configuration = {
-    dataFolder: "/tmp/data"
-}
