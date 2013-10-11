@@ -65,7 +65,6 @@ var wrap = function(func, options) {
         options = options || {};
         var render = typeof(options.render) === 'undefined' ? false : options.render;
         var loggedin = typeof(options.loggedin) === 'undefined' ? true : options.loggedin;
-        console.log(options.loggedin);
         req.gearContext = {};
         Gear.Users.getCurrentUser(req.cookies.authtoken).then(function(user) {
             req.gearContext.currentUser = user;
