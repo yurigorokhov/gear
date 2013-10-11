@@ -60,13 +60,18 @@ if ('development' == app.get('env')) {
 }
 
 // Error catching
-var wrap = function(func, render) {
-    var render = render || false;
+var wrap = function(func, options) {
     return function(req, res) {
+        options = options || {};
+        var render = typeof(options.render) === 'undefined' ? false : options.render;
+        var loggedin = typeof(options.loggedin) === 'undefined' ? true : options.loggedin;
+        console.log(options.loggedin);
         req.gearContext = {};
         Gear.Users.getCurrentUser(req.cookies.authtoken).then(function(user) {
             req.gearContext.currentUser = user;
-            if(render) {
+            if(loggedin && user._anonymous) {
+                res.send('You must be logged in to perform this action', 401);
+            } else if(render) {
                 func(req, res);
             } else {
                 func(req, res).then(function(result) {
@@ -95,8 +100,8 @@ var wrap = function(func, render) {
     };
 };
 
-app.get('/', wrap(routes.index, true));
-app.get('/filebrowser', wrap(routes.filebrowser, true));
+app.get('/', wrap(routes.index, { render: true, loggedin: false }));
+app.get('/filebrowser', wrap(routes.filebrowser, { render: true, loggedin: false }));
 
 // files
 app.get('/@api/files/list', wrap(files.list));
@@ -105,7 +110,7 @@ app.get('/@api/files/get', wrap(files.get));
 // Users
 app.post('/@api/users', wrap(user.create));
 app.get('/@api/users/current', wrap(user.current));
-app.get('/@api/users/login', wrap(user.login));
+app.get('/@api/users/login', wrap(user.login, { loggedin: false }));
 app.get('/@api/users', wrap(user.list));
 
 app.get('/*', function(req, res) {
