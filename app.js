@@ -11,7 +11,8 @@ _ = require('underscore');
 Q = require('q');
 mime = require('mime');
 crypto = require('crypto');
-_.mixin(require('underscore.string').exports());
+_.str = require('underscore.string');
+_.mixin(_.str.exports());
 
 require('./api/api.js');
 var express = require('express')
