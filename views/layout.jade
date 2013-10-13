@@ -27,21 +27,21 @@ html(ng-app='gear')
                       when('/leed', {templateUrl: 'partials/leed.html' }).
                       otherwise({redirectTo: '/about'});
                 }]);
-                function CommonCtrl($scope, $cookies, $http) {
+                function CommonCtrl($scope, $cookies, $http, $window) {
                     $scope.loginfailed = false;
                     $scope.login = function(username, password) {
                         $scope.loginfailed = false;
                         $http({method: 'GET', url: '/@api/users/login', headers: { authorization: 'Basic ' + btoa(username + ':' + password) }}).success(function(authtoken) {
                             $scope.loginfailed = false;
                             $cookies.authtoken = authtoken;
-                            window.location.reload();
+                            $window.location.href = $window.location.origin + '/filebrowser';
                         }).error(function(data) {
                             $scope.loginfailed = true;
                         });
                     };
                     $scope.logout = function() {
                         $cookies.authtoken = 'null';
-                        window.location.reload();
+                        $window.location.reload();
                     };
                     $scope.keypress = function(event, username, password) {
                         if(event.keyCode === 13) {
