@@ -2,7 +2,7 @@ Gear.provide('Gear.Files');
 
 _(Gear.Files).extend({
     getPathFromRequest: function(req) {
-        var requestPath = req.query['path'] || '';
+        var requestPath = req.query.path || '';
         if(!requestPath || _.str.include(requestPath, '..')) {
             return null;
         };

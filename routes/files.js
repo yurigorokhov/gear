@@ -39,3 +39,31 @@ exports.get = function(req, res) {
     }).done();
     return def.promise;
 };
+
+exports.addPermission = function(req, res) {
+    var def = Q.defer();
+    var filePath = Gear.Files.getPathFromRequest(req);
+    if(!filePath) {
+        def.reject(new Gear.Error('Invalid path', 400));
+        return def.promise;
+    }
+    Gear.Files.pathExists(filePath).then(function(stats) {
+        if(!stats.isDirectory()) {
+            def.reject(new Gear.Error('This path is not a directory, cannot add a directory', 400));
+        } else {
+            var user = req.query.user;
+            if(!user) {
+                def.reject(new Gear.Error('A user parameter is required', 400));
+            } else {
+                Gear.Permissions.addPermission(filePath, user, req.body).then(function() {
+                    def.resolve();
+                }).fail(function(err) {
+                    def.reject(err);
+                });
+            }
+        }
+    }).fail(function(err) {
+        def.reject(new Gear.Error('File path was not found', 404));
+    });
+    return def.promise;
+};

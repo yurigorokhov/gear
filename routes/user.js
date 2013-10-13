@@ -6,7 +6,7 @@ exports.create = function(req, res) {
         Gear.Users.createUser(req.body).then(function(user) {
             def.resolve(user.toResponseObject());
         }).fail(function(err) {
-                def.reject(err);
+            def.reject(err);
         });
     }
     return def.promise;

@@ -37,7 +37,7 @@ try {
     console.log('config.js does not exist (' + e.message + ')');
     process.exit(1);
 }
-db = require('mongojs').connect(config.mongo.dburl, ['users', 'authtokens']);
+db = require('mongojs').connect(config.mongo.dburl, ['users', 'authtokens', 'permissions']);
 
 // init app
 var app = express();
@@ -66,11 +66,14 @@ var wrap = function(func, options) {
         options = options || {};
         var render = typeof(options.render) === 'undefined' ? false : options.render;
         var loggedin = typeof(options.loggedin) === 'undefined' ? true : options.loggedin;
+        var admin = typeof(options.admin) === 'undefined' ? false : options.admin;
         req.gearContext = {};
         Gear.Users.getCurrentUser(req.cookies.authtoken).then(function(user) {
             req.gearContext.currentUser = user;
-            if(loggedin && user._anonymous) {
+            if((loggedin || admin) && user._anonymous) {
                 res.send('You must be logged in to perform this action', 401);
+            } else if(admin && !user._admin) {
+                res.send('You must be an administrator to perform this action', 403);
             } else if(render) {
                 func(req, res);
             } else {
@@ -106,6 +109,7 @@ app.get('/filebrowser', wrap(routes.filebrowser, { render: true, loggedin: false
 // files
 app.get('/@api/files/list', wrap(files.list));
 app.get('/@api/files/get', wrap(files.get));
+app.post('/@api/files/permissions', wrap(files.addPermission, { admin: true }));
 
 // Users
 app.post('/@api/users', wrap(user.create));

@@ -34,6 +34,10 @@ _(Gear.Users).extend({
 
     getCurrentUser: function(authtoken) {
         var def = Q.defer();
+        if(config.mockuser) {
+            def.resolve(Gear.User.fromData(config.mockuser));
+            return def.promise;
+        }
         if(!authtoken) {
             def.resolve(Gear.User.getAnonymous());
         } else {
@@ -44,8 +48,8 @@ _(Gear.Users).extend({
                     Gear.Users.getUser(username).then(function(user) {
                         def.resolve(user);
                     }).fail(function(err) {
-                            def.reject(err);
-                        });
+                        def.reject(err);
+                    });
                 }
             });
         }

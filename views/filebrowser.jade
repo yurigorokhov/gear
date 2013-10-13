@@ -68,7 +68,7 @@ html(ng-app='gear-browser')
                 };
             };
             var FilesCtrl = function($scope, $http) {
-                $scope.path = '';
+                $scope.path = '/';
                 $scope.segments = [ { name: 'Home', path: '' } ];
                 $scope.navigate = function(newPath) {
                     $scope.path = newPath;
