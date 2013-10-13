@@ -13,6 +13,6 @@ exports.filebrowser = function(req, res) {
         });
         res.end();
     } else {
-        res.render('filebrowser', { title: 'Gear Management Group - File Browser' });
+        res.render('filebrowser', { title: 'Gear Management Group - File Browser', context: req.gearContext });
     }
 };

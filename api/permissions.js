@@ -1,5 +1,16 @@
 Gear.provide('Gear.Permissions');
 _(Gear.Permissions).extend({
+    getPermissions: function(folder) {
+        var def = Q.defer();
+        db.permissions.findOne({ folder: folder }, function(err, folderPermission) {
+            if(err) {
+                def.reject(new Gear.Error('Failed to fetch permissions'));
+            } else {
+                def.resolve(folderPermission || {});
+            }
+        });
+        return def.promise;
+    },
     addPermission: function(folder, user, permission) {
         var def = Q.defer();
 

@@ -110,6 +110,7 @@ app.get('/filebrowser', wrap(routes.filebrowser, { render: true, loggedin: false
 app.get('/@api/files/list', wrap(files.list));
 app.get('/@api/files/get', wrap(files.get));
 app.post('/@api/files/permissions', wrap(files.addPermission, { admin: true }));
+app.get('/@api/files/permissions', wrap(files.getPermissions));
 
 // Users
 app.post('/@api/users', wrap(user.create));
