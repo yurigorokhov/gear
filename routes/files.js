@@ -63,7 +63,7 @@ exports.getPermissions = function(req, res) {
     return def.promise;
 };
 
-exports.addPermission = function(req, res) {
+exports.setPermissions = function(req, res) {
     var def = Q.defer();
     var filePath = Gear.Files.getPathFromRequest(req);
     if(!filePath) {
@@ -74,16 +74,11 @@ exports.addPermission = function(req, res) {
         if(!stats.isDirectory()) {
             def.reject(new Gear.Error('This path is not a directory, cannot add a permission', 400));
         } else {
-            var user = req.query.user;
-            if(!user) {
-                def.reject(new Gear.Error('A user parameter is required', 400));
-            } else {
-                Gear.Permissions.addPermission(filePath, user, req.body).then(function() {
-                    def.resolve();
-                }).fail(function(err) {
-                    def.reject(err);
-                });
-            }
+            Gear.Permissions.setPermissions(filePath, req.body).then(function() {
+                def.resolve();
+            }).fail(function(err) {
+                def.reject(err);
+            });
         }
     }).fail(function(err) {
         def.reject(new Gear.Error('File path was not found', 404));

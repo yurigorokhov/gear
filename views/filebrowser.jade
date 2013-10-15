@@ -1,36 +1,12 @@
-block permissionsDialog
-    #modal-permissions.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabelPermissions', aria-hidden='true', ng-controller="permissionsCtrl")
-        .modal-dialog
-            .modal-content
-                .modal-header
-                    button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                    h4#myModalLabelPermissions Edit Permissions
-                .modal-body
-                    table.table.table-hover
-                        thead
-                            tr
-                                th username
-                                th Read
-                                th Write
-                        tbody
-                            tr(ng-repeat='user in users')
-                                td
-                                    {{ user.username }}
-                                td
-                                    input(type="checkbox", ng-model="permissions[user.username].read")
-                                td
-                                    input(type="checkbox", ng-model="permissions[user.username].write")
-                .modal-footer
-                    button.btn.btn-default(type='button', data-dismiss='modal', aria-hidden='true') Done
-
 doctype 5
 html(ng-app='gear-browser')
     head
         title= title
         link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
         link(rel='stylesheet', href='/stylesheets/style.css')
+        script(src='//cdnjs.cloudflare.com/ajax/libs/angular.js/1.1.5/angular.min.js')
+        script(src='//code.angularjs.org/1.0.0rc10/angular-cookies-1.0.0rc10.js')
     body
-        block permissionsDialog
         .menu(ng-controller="menuCtrl")
             a.top-link(href='#', ng-click='logout()') Logout
             a.top-link(href='/') Main Site
@@ -72,9 +48,30 @@ html(ng-app='gear-browser')
 
                                             // directory
                                             a(href='#modal-permissions', role='button', data-toggle='modal', ng-show="file.isDirectory") Permissions
+            #modal-permissions.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabelPermissions', aria-hidden='true', ng-controller='permissionsCtrl')
+                .modal-dialog
+                    .modal-content
+                        .modal-header
+                            button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                            h4#myModalLabelPermissions Edit Permissions
+                        .modal-body
+                            table.table.table-hover
+                                thead
+                                    tr
+                                        th username
+                                        th Read
+                                        th Write
+                                tbody
+                                    tr(ng-repeat='user in users')
+                                        td
+                                            {{ user.username }}
+                                        td
+                                            input(type="checkbox", ng-model="permissions[user.username].read", ng-click="updatePermissions(permissions)")
+                                        td
+                                            input(type="checkbox", ng-model="permissions[user.username].write", ng-click="updatePermissions(permissions)")
+                        .modal-footer
+                            button.btn.btn-default(type='button', data-dismiss='modal', aria-hidden='true') Done
 
-        script(src='//cdnjs.cloudflare.com/ajax/libs/angular.js/1.1.5/angular.min.js')
-        script(src='//code.angularjs.org/1.0.0rc10/angular-cookies-1.0.0rc10.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.2/jquery.min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/underscore.string/2.3.3/underscore.string.min.js')
@@ -98,12 +95,13 @@ html(ng-app='gear-browser')
                     window.location.reload();
                 };
             };
-            var FilesCtrl = function($scope, $http) {
-                $scope.path = '/';
-                $scope.segments = [ { name: 'Home', path: '' } ];
+            var myApp = angular.module('gear-browser', ['ngCookies']);
+            myApp.controller('FilesCtrl', ['$scope', '$http', function($scope, $http) {
+                $scope.location = { path: '/' };
+                $scope.segments = [ { name: 'Home', path: '/' } ];
                 $scope.navigate = function(newPath) {
-                    $scope.path = newPath;
-                    $scope.segments = [ { name: 'Home', path: '' } ];
+                    $scope.location.path = newPath;
+                    $scope.segments = [ { name: 'Home', path: '/' } ];
                     $scope.segments = _.union($scope.segments, _($scope.path).chain().words('/').combinations().map(function(arr) {
                         return {
                             path: _(arr).isArray() ? '/' + arr.join('/') : '/' + arr,
@@ -113,32 +111,34 @@ html(ng-app='gear-browser')
                     $scope.fetchFiles();
                 };
                 $scope.fetchFiles = function() {
-                    $http({method: 'GET', url: '/@api/files/list', params: {path: encodeURIComponent($scope.path)}}).success(function(data) {
+                    $http({method: 'GET', url: '/@api/files/list', params: {path: encodeURIComponent($scope.location.path)}}).success(function(data) {
                         $scope.files = data;
                     }).error(function(data) {
-                                    //TODO
+                        //TODO
                     });
                 }
                 $scope.fetchFiles();
-            };
-            var permissionsCtrl = function($scope, $http) {
-                $scope.changePermission = function() {
-
-                };
+            }]);
+            myApp.controller('permissionsCtrl', ['$scope', '$http', function($scope, $http) {
+                $scope.updatePermissions = function(permissions) {
+                    $http({ method: 'POST', url: '/@api/files/permissions', data: permissions, params: { path: encodeURIComponent($scope.location.path) }}).error(function(err) {
+                        //TODO
+                    });
+                },
 
                 //TODO: execute these queries simultaneously
                 //TODO: get path from files scope
                 $http({method: 'GET', url: '/@api/users'}).success(function(users) {
-                    $http({method: 'GET', url: '/@api/files/permissions', params: { path: encodeURIComponent('/client1') } }).success(function(permissions) {
+                    $http({method: 'GET', url: '/@api/files/permissions', params: { path: encodeURIComponent($scope.location.path) } }).success(function(permissions) {
                         $scope.users = users;
                         $scope.permissions = permissions;
+                        _(users).each(function(u) {
+                            $scope.permissions[u.username] = $scope.permissions[u.username] || {};
+                        });
                     }).error(function(err) {
                         //TODO
                     });
                 }).error(function(data) {
                     //TODO
                 });
-            }
-            angular.module('gear-browser', ['ngCookies']).
-                config(['$routeProvider', function($routeProvider) {
             }]);
