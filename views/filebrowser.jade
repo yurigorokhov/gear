@@ -15,9 +15,22 @@ html(ng-app='gear-browser')
         .filebrowser(ng-controller='FilesCtrl')
             h3 File Browser
             .files
-                ol.breadcrumb
-                    li(ng-repeat="segment in segments", ng-class='$last ? "active" : ""')
-                        a(href="#", ng-click="navigate(segment.path)") {{ segment.name }}
+                ul.nav.nav-pills
+                    li
+                        ol.breadcrumb
+                            li(ng-repeat="segment in segments", ng-class='$last ? "active" : ""')
+                                a(href="#", ng-click="navigate(segment.path)") {{ segment.name }}
+
+                    // Folder level actions
+                    li.pull-right.dropdown
+                        a.dropdown-toggle.btn.btn-default(data-toggle="dropdown", href="#") Folder Actions
+                            span.caret
+                        ul.dropdown-menu
+                            li
+                                a(href='#modal-permissions', role='button', data-toggle='modal', ng-click='loadPermissions()') Permissions
+
+
+                // Table
                 table.table.table-hover
                     thead
                         tr
@@ -31,29 +44,26 @@ html(ng-app='gear-browser')
                             td
                                 span(ng-class='file.isDirectory ? "glyphicon glyphicon-folder-open": "glyphicon glyphicon-file"')
                             td
-                                a.btn(href="#", ng-click='navigate(path + "/" + file.name)', ng-class='!file.isDirectory ? "disabled": ""') {{ file.name }}
+                                a.btn(href="#", ng-click='navigate((location.path === "/" ? "" : location.path) + "/" + file.name)', ng-class='!file.isDirectory ? "disabled": ""') {{ file.name }}
                             td {{ file.isDirectory ? 'Directory' : file.mime }}
                             td {{ file.size }}
                             td
                                 .btn-group()
-                                    button.btn.btn-default.dropdown-toggle(data-toggle="dropdown") Actions
+                                    button.btn.btn-default.dropdown-toggle(data-toggle="dropdown", ng-show="!file.isDirectory") Actions
                                         span.caret
-                                    ul.dropdown-menu(role="menu")
+                                    ul.dropdown-menu(role="menu", ng-show="!file.isDirectory")
                                         li
 
                                             // files
                                             a(ng-href="{{file.href}}", ng-show="!file.isDirectory") Download
                                             a(ng-show="!file.isDirectory") Upload New Version
                                             a(ng-show="!file.isDirectory") Move
-
-                                            // directory
-                                            a(href='#modal-permissions', role='button', data-toggle='modal', ng-show="file.isDirectory") Permissions
-            #modal-permissions.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabelPermissions', aria-hidden='true', ng-controller='permissionsCtrl')
+            #modal-permissions.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabelPermissions', aria-hidden='true')
                 .modal-dialog
                     .modal-content
                         .modal-header
                             button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                            h4#myModalLabelPermissions Edit Permissions
+                            h4#myModalLabelPermissions Edit Permissions for {{ location.path }}
                         .modal-body
                             table.table.table-hover
                                 thead
@@ -96,13 +106,13 @@ html(ng-app='gear-browser')
                 };
             };
             var myApp = angular.module('gear-browser', ['ngCookies']);
-            myApp.controller('FilesCtrl', ['$scope', '$http', function($scope, $http) {
+            myApp.controller('FilesCtrl', ['$scope', '$http', '$q', function($scope, $http, $q) {
                 $scope.location = { path: '/' };
                 $scope.segments = [ { name: 'Home', path: '/' } ];
                 $scope.navigate = function(newPath) {
                     $scope.location.path = newPath;
                     $scope.segments = [ { name: 'Home', path: '/' } ];
-                    $scope.segments = _.union($scope.segments, _($scope.path).chain().words('/').combinations().map(function(arr) {
+                    $scope.segments = _.union($scope.segments, _($scope.location.path).chain().words('/').combinations().map(function(arr) {
                         return {
                             path: _(arr).isArray() ? '/' + arr.join('/') : '/' + arr,
                             name: _(arr).isArray() ? _(arr).last(1)[0] : arr
@@ -111,34 +121,29 @@ html(ng-app='gear-browser')
                     $scope.fetchFiles();
                 };
                 $scope.fetchFiles = function() {
-                    $http({method: 'GET', url: '/@api/files/list', params: {path: encodeURIComponent($scope.location.path)}}).success(function(data) {
+                    $http({method: 'GET', url: '/@api/files/list', params: { path: encodeURIComponent($scope.location.path) }}).success(function(data) {
                         $scope.files = data;
                     }).error(function(data) {
                         //TODO
                     });
                 }
                 $scope.fetchFiles();
-            }]);
-            myApp.controller('permissionsCtrl', ['$scope', '$http', function($scope, $http) {
+
+                // Permissions
+                $scope.loadPermissions = function() {
+                    var getUsers = $http({method: 'GET', url: '/@api/users'});
+                    var getPermissions = $http({method: 'GET', url: '/@api/files/permissions', params: { path: encodeURIComponent($scope.location.path) } });
+                    $q.all([ getUsers, getPermissions ]).then(function(results) {
+                        $scope.users = results[0].data;
+                        $scope.permissions = results[1].data;
+                        _($scope.users).each(function(u) {
+                            $scope.permissions[u.username] = $scope.permissions[u.username] || {};
+                        });
+                    });
+                };
                 $scope.updatePermissions = function(permissions) {
                     $http({ method: 'POST', url: '/@api/files/permissions', data: permissions, params: { path: encodeURIComponent($scope.location.path) }}).error(function(err) {
                         //TODO
                     });
-                },
-
-                //TODO: execute these queries simultaneously
-                //TODO: get path from files scope
-                $http({method: 'GET', url: '/@api/users'}).success(function(users) {
-                    $http({method: 'GET', url: '/@api/files/permissions', params: { path: encodeURIComponent($scope.location.path) } }).success(function(permissions) {
-                        $scope.users = users;
-                        $scope.permissions = permissions;
-                        _(users).each(function(u) {
-                            $scope.permissions[u.username] = $scope.permissions[u.username] || {};
-                        });
-                    }).error(function(err) {
-                        //TODO
-                    });
-                }).error(function(data) {
-                    //TODO
-                });
+                };
             }]);
