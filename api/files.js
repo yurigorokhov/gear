@@ -10,6 +10,10 @@ _(Gear.Files).extend({
         return path.join(config.dataFolder, pathParam);
     },
 
+    getRelativeFilePath: function(filePath) {
+        return '/' + path.relative(config.dataFolder, filePath);
+    },
+
     getRelativePath: function(fullPath) {
         return path.relative(config.dataFolder, fullPath);
     },

@@ -74,11 +74,11 @@ html(ng-app='gear-browser')
                                 tbody
                                     tr(ng-repeat='user in users')
                                         td
-                                            {{ user.username }}
+                                            {{ user }}
                                         td
-                                            input(type="checkbox", ng-model="permissions[user.username].read", ng-click="updatePermissions(permissions)")
+                                            input(type="checkbox", ng-model="permissions[user].read", ng-click="updatePermissions(permissions, user)")
                                         td
-                                            input(type="checkbox", ng-model="permissions[user.username].write", ng-click="updatePermissions(permissions)")
+                                            input(type="checkbox", ng-model="permissions[user].write", ng-click="updatePermissions(permissions, user)")
                         .modal-footer
                             button.btn.btn-default(type='button', data-dismiss='modal', aria-hidden='true') Done
 
@@ -131,18 +131,14 @@ html(ng-app='gear-browser')
 
                 // Permissions
                 $scope.loadPermissions = function() {
-                    var getUsers = $http({method: 'GET', url: '/@api/users'});
-                    var getPermissions = $http({method: 'GET', url: '/@api/files/permissions', params: { path: encodeURIComponent($scope.location.path) } });
-                    $q.all([ getUsers, getPermissions ]).then(function(results) {
-                        $scope.users = results[0].data;
-                        $scope.permissions = results[1].data;
-                        _($scope.users).each(function(u) {
-                            $scope.permissions[u.username] = $scope.permissions[u.username] || {};
-                        });
+                    $scope.permissions = {};
+                    $http({method: 'GET', url: '/@api/files/permissions', params: { path: encodeURIComponent($scope.location.path) } }).then(function(res) {
+                        $scope.users = res.data.users;
+                        $scope.permissions = res.data.permissions;
                     });
                 };
-                $scope.updatePermissions = function(permissions) {
-                    $http({ method: 'POST', url: '/@api/files/permissions', data: permissions, params: { path: encodeURIComponent($scope.location.path) }}).error(function(err) {
+                $scope.updatePermissions = function(permissions, username) {
+                    $http({ method: 'POST', url: '/@api/files/permissions', data: permissions[username], params: { path: encodeURIComponent($scope.location.path), user: username }}).error(function(err) {
                         //TODO
                     });
                 };

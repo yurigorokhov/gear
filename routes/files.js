@@ -51,15 +51,19 @@ exports.getPermissions = function(req, res) {
         if(!stats.isDirectory()) {
             def.reject(new Gear.Error('This path is not a directory, cannot get permissions', 400));
         } else {
-            Gear.Permissions.getPermissions(filePath).then(function(permissions) {
-                def.resolve(permissions);
+            Gear.Users.getUserList().then(function(users) {
+                Gear.Permissions.getPermissionsForUsers(Gear.Files.getRelativeFilePath(filePath), _(users).pluck('_username')).then(function(permissions) {
+                    def.resolve(permissions);
+                }).fail(function(err) {
+                    def.reject(err);
+                });
             }).fail(function(err) {
                 def.reject(err);
             });
         }
     }).fail(function(err) {
-            def.reject(new Gear.Error('File path was not found', 404));
-        });
+        def.reject(new Gear.Error('File path was not found', 404));
+    });
     return def.promise;
 };
 
@@ -70,11 +74,15 @@ exports.setPermissions = function(req, res) {
         def.reject(new Gear.Error('Invalid path', 400));
         return def.promise;
     }
+    if(!req.query.user) {
+        def.reject(new Gear.Error('User is a required parameter', 400));
+        return def.promise;
+    }
     Gear.Files.pathExists(filePath).then(function(stats) {
         if(!stats.isDirectory()) {
             def.reject(new Gear.Error('This path is not a directory, cannot add a permission', 400));
         } else {
-            Gear.Permissions.setPermissions(filePath, req.body).then(function() {
+            Gear.Permissions.setPermissions(Gear.Files.getRelativeFilePath(filePath), req.query.user, req.body).then(function() {
                 def.resolve();
             }).fail(function(err) {
                 def.reject(err);
