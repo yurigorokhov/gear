@@ -28,9 +28,9 @@ html(ng-app='gear-browser')
                         a.dropdown-toggle.btn.btn-default(data-toggle="dropdown", href="#") Folder Actions
                             span.caret
                         ul.dropdown-menu
-                        if context.currentUser.admin
-                            li
-                                a(href='#modal-permissions', role='button', data-toggle='modal', ng-click='loadPermissions()') Permissions
+                            if context.currentUser.admin
+                                li
+                                    a(href='#modal-permissions', role='button', data-toggle='modal', ng-click='loadPermissions()') Permissions
 
 
                 // Table
