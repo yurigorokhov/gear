@@ -135,8 +135,8 @@ _(Gear.Users).extend({
 
                 // Attempt to find the user
                 Gear.Users.getUser(username).then(function(user) {
-                    if(user.authenticateWithHash(encodePassword(password))) {
-                        Gear.Authtokens.getAuthtokenForUser(user.getUserName()).then(function(authtoken) {
+                    if(user.passwordHash == encodePassword(password)) {
+                        Gear.Authtokens.getAuthtokenForUser(user.username).then(function(authtoken) {
                             def.resolve(authtoken);
                         }).fail(function() {
                             def.reject(new Gear.Error('There was a problem logging the user in'));
