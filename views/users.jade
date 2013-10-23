@@ -1,0 +1,104 @@
+doctype 5
+html(ng-app='gear-users')
+    head
+        title= title
+        link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
+        link(rel='stylesheet', href='/stylesheets/style.css')
+        script(src='//cdnjs.cloudflare.com/ajax/libs/angular.js/1.1.5/angular.min.js')
+        script(src='//code.angularjs.org/1.0.0rc10/angular-cookies-1.0.0rc10.js')
+    body
+        .menu(ng-controller="menuCtrl")
+            a.top-link(href='#', ng-click='logout()') Logout
+            a.top-link(href='/') Main Site
+            a.top-link(href="/filebrowser") My Vault
+        span(id='header')
+            img(height='160', width='289', src='/images/gearlogo.jpg')
+
+        .users(ng-controller='usersCtrl')
+            h3 Users
+            .users
+                ul.nav.nav-pills
+                    li.pull-right
+                        a.btn.btn-default(href='#modal-user', role='button', data-toggle='modal', ng-click='setSelectedUser({new:true})') Create User
+
+                // Table
+                table.table.table-hover
+                    thead
+                        tr
+                            th Full name
+                            th Username
+                            th Admin
+                            th Actions
+                    tbody
+                        tr(ng-repeat='user in users')
+                            td
+                                {{ user.name }}
+                            td
+                                {{ user.username }}
+                            td
+                                {{ user.admin ? 'Yes' : '' }}
+                            td
+                                a(href='#modal-user', role='button', data-toggle='modal', ng-click='setSelectedUser(user)') Edit
+            #modal-user.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabelUser', aria-hidden='true')
+                .modal-dialog
+                    .modal-content
+                        .modal-header
+                            button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                            h4#myModalLabelUser {{ (selectedUser.new ? "Create User " : "Edit User ") + selectedUser.username }}
+                        .modal-body
+                            form.css-form(role="form", novalidate)
+                                .form-group
+                                    label(for="fullname") Full name
+                                    input.form-control#fullname(type="text", placeholder="Full name", ng-model="selectedUser.name", required)
+                                .form-group
+                                    label(for="username") Username
+                                    input.form-control#username(type="text", placeholder="Username", ng-model="selectedUser.username", ng-disabled="!selectedUser.new")
+                                .form-group
+                                    label(for="password") Password
+                                    input.form-control#password(type="password", placeholder="Password", ng-model="selectedUser.password")
+                                .checkbox
+                                    label Admin
+                                        input(type="checkbox", ng-disabled="form.$invalid", ng-model="selectedUser.admin")
+                        .modal-footer
+                            button.btn.btn-primary(type='button', data-dismiss='modal', aria-hidden='true', ng-click='createUser(selectedUser)') Done
+        script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.2/jquery.min.js')
+        script(src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js')
+        script(src='//cdnjs.cloudflare.com/ajax/libs/underscore.string/2.3.3/underscore.string.min.js')
+        script(src='/javascripts/bootstrap.min.js')
+        script
+            _.mixin(_.str.exports());
+            _.mixin({
+                combinations: function(arr, accum) {
+                    if(!accum) {
+                        accum = [arr[0]];
+                        return _.combinations(_(arr).rest(1), accum);
+                    }
+                    if(_(arr).isEmpty()) return accum;
+                    accum.push( _.union(_(accum).last(1)[0], arr[0]) );
+                    return _.combinations(_(arr).rest(1), accum);
+                }
+            });
+            var menuCtrl = function($scope, $cookies) {
+                $scope.logout = function() {
+                    $cookies.authtoken = 'null';
+                    window.location.reload();
+                };
+            };
+            var usersCtrl = function($scope, $http) {
+                $scope.users = [];
+                $scope.selectedUser = {};
+                $scope.setSelectedUser = function(user) {
+                    $scope.selectedUser = user;
+                };
+                $scope.createUser = function(user) {
+                    $http({method: 'POST', url: '/@api/users', data: user }).then($scope.fetchUsers);
+                };
+                $scope.fetchUsers = function() {
+                    $http({method: 'GET', url: '/@api/users' }).then(function(res) {
+                        $scope.users = res.data;
+                    });
+                };
+                $scope.fetchUsers();
+
+            };
+            var myApp = angular.module('gear-users', ['ngCookies']);
