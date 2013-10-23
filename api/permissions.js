@@ -3,7 +3,9 @@ _(Gear.Permissions).extend({
     _permissionsMap: null,
     _defaultPermissions: { read: false, write: false },
     _getPathSegments: function(filePath) {
-        return _(filePath).chain().split(path.sep).filter(function(p) { return !_(p).isEmpty(); }).value();
+        var arr = _(filePath).chain().words(path.sep).filter(function(p) { return !_(p).isEmpty(); }).value();
+        arr.unshift('home');
+        return arr;
     },
     _getPermissionsMap: function() {
         var def = Q.defer();
@@ -29,7 +31,7 @@ _(Gear.Permissions).extend({
         } else {
             var userMap = self._permissionsMap[user];
             var level = userMap;
-            var segments = this._getPathSegments(folder);
+            var segments = self._getPathSegments(folder);
             var permissions = self._defaultPermissions;
             for(var i = 0; i < segments.length; i++) {
                 if(level[segments[i]]) {
@@ -69,8 +71,9 @@ _(Gear.Permissions).extend({
         var self = this;
         this._getPermissionsMap().then(function() {
             self._permissionsMap = self._permissionsMap || {};
+            self._permissionsMap[user] = self._permissionsMap[user] || {};
             var level = self._permissionsMap[user];
-            _(this._getPathSegments(folder)).each(function(segment) {
+            _(self._getPathSegments(folder)).each(function(segment) {
                 level[segment] = level[segment] || {};
                 if(permissions.read === true) {
                     level.permissions = { read: true, write: permissions.write || false };
@@ -85,6 +88,25 @@ _(Gear.Permissions).extend({
         }).fail(function() {
             def.reject();
         });
+        return def.promise;
+    },
+    filterFilesByUser: function(files, user) {
+        var def = Q.defer();
+        if(user.admin) {
+            def.resolve(files);
+            return def.promise;
+        }
+        var self = this;
+        this._getPermissionsMap()
+            .then(function() {
+                return _(files).filter(function(f) {
+                    return self._getPermissionForUser(f.relativePath, user.username).read === true;
+                });
+            })
+            .then(def.resolve)
+            .fail(function() {
+                def.reject();
+            });
         return def.promise;
     }
 });

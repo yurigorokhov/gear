@@ -38,23 +38,23 @@ _(Gear.Files).extend({
 
     readDir: function(dirPath) {
         var def = Q.defer();
+        var self = this;
         fs.readdir(dirPath, function(err, files) {
             if(err) {
                  def.reject(err);
              } else {
-                var result = _(files).chain().map(function(f) {
+                var result = _(files).map(function(f) {
                     var stats = fs.statSync(path.join(dirPath, f));
                     return {
                         name: f,
+                        relativePath: self.getRelativeFilePath(path.join(dirPath, f)),
                         size: stats.size,
                         mime: mime.lookup(path.join(dirPath, f)),
                         isDirectory: stats.isDirectory(),
-                        href: '/@api/files/get?path=' + encodeURIComponent(encodeURIComponent(Gear.Files.getRelativePath(path.join(dirPath, f))))
+                        href: '/@api/files/get?path=' + encodeURIComponent(encodeURIComponent(self.getRelativePath(path.join(dirPath, f))))
                     };
-                }).filter(function(file) {
-                    return true;
-                }).value();
-                 def.resolve(result);
+                });
+                def.resolve(result);
              }
         });
         return def.promise;

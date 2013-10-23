@@ -21,7 +21,6 @@ require('./authtokens.js');
 require('./utils.js');
 require('./error.js');
 require('./file.js');
-require('./user.js');
 require('./files.js');
 require('./users.js');
 require('./permissions.js');

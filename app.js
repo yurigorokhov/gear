@@ -69,10 +69,10 @@ var wrap = function(func, options) {
         var admin = typeof(options.admin) === 'undefined' ? false : options.admin;
         req.gearContext = {};
         Gear.Users.getCurrentUser(req.cookies.authtoken).then(function(user) {
-            req.gearContext.currentUser = user;
-            if((loggedin || admin) && user._anonymous) {
+            req.gearContext.currentUser = Gear.Users.filterUserDataForResponse(user);
+            if((loggedin || admin) && user.anonymous) {
                 res.send('You must be logged in to perform this action', 401);
-            } else if(admin && !user._admin) {
+            } else if(admin && !user.admin) {
                 res.send('You must be an administrator to perform this action', 403);
             } else if(render) {
                 func(req, res);
@@ -104,7 +104,8 @@ var wrap = function(func, options) {
 };
 
 app.get('/', wrap(routes.index, { render: true, loggedin: false }));
-app.get('/filebrowser', wrap(routes.filebrowser, { render: true, loggedin: false }));
+app.get('/filebrowser', wrap(routes.filebrowser, { render: true, loggedin: true }));
+app.get('/users', wrap(routes.users, { render: true, admin: true }));
 
 // files
 app.get('/@api/files/list', wrap(files.list));
@@ -113,7 +114,7 @@ app.post('/@api/files/permissions', wrap(files.setPermissions, { admin: true }))
 app.get('/@api/files/permissions', wrap(files.getPermissions));
 
 // Users
-app.post('/@api/users', wrap(user.create));
+app.post('/@api/users', wrap(user.create, { admin: true }));
 app.get('/@api/users/current', wrap(user.current));
 app.get('/@api/users/login', wrap(user.login, { loggedin: false }));
 app.get('/@api/users', wrap(user.list));

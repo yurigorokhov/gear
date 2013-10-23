@@ -1,14 +1,10 @@
 exports.create = function(req, res) {
     var def = Q.defer();
-    if(!req.gearContext.currentUser._admin) {
-        def.reject(new Gear.Error('You must be an administrator to create users', 403));
-    } else {
-        Gear.Users.createUser(req.body).then(function(user) {
-            def.resolve(user.toResponseObject());
-        }).fail(function(err) {
-            def.reject(err);
-        });
-    }
+    Gear.Users.createUser(req.body).then(function(user) {
+        def.resolve(Gear.Users.filterUserDataForResponse(user));
+    }).fail(function(err) {
+        def.reject(err);
+    });
     return def.promise;
 };
 
@@ -16,7 +12,7 @@ exports.list = function(req, res) {
     var def = Q.defer();
     Gear.Users.getUserList().then(function(list) {
         def.resolve(_(list).map(function(u) {
-            return u.toResponseObject();
+            return Gear.Users.filterUserDataForResponse(u);
         }));
     }).fail(function(error) {
         def.reject(error);
@@ -41,6 +37,6 @@ exports.login = function(req, res) {
 
 exports.current = function(req, res) {
     var def = Q.defer();
-    def.resolve(req.gearContext.currentUser.toResponseObject());
+    def.resolve(req.gearContext.currentUser);
     return def.promise;
 };

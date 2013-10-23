@@ -10,6 +10,8 @@ html(ng-app='gear-browser')
         .menu(ng-controller="menuCtrl")
             a.top-link(href='#', ng-click='logout()') Logout
             a.top-link(href='/') Main Site
+            if context.currentUser.admin
+                a.top-link(href="/users") Manage Users
         span(id='header')
             img(height='160', width='289', src='/images/gearlogo.jpg')
         .filebrowser(ng-controller='FilesCtrl')
@@ -26,6 +28,7 @@ html(ng-app='gear-browser')
                         a.dropdown-toggle.btn.btn-default(data-toggle="dropdown", href="#") Folder Actions
                             span.caret
                         ul.dropdown-menu
+                        if context.currentUser.admin
                             li
                                 a(href='#modal-permissions', role='button', data-toggle='modal', ng-click='loadPermissions()') Permissions
 
@@ -65,12 +68,14 @@ html(ng-app='gear-browser')
                             button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
                             h4#myModalLabelPermissions Edit Permissions for {{ location.path }}
                         .modal-body
+                            .alert.alert-info
+                                p Admin users are not shown here because they have full access
                             table.table.table-hover
                                 thead
                                     tr
                                         th username
-                                        th Read
-                                        th Write
+                                        th View
+                                        th Edit
                                 tbody
                                     tr(ng-repeat='user in users')
                                         td

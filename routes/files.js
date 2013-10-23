@@ -9,11 +9,14 @@ exports.list = function(req, res) {
         if(!stats.isDirectory()) {
             def.reject(new Gear.Error('Path is not a directory'));
         } else {
-            Gear.Files.readDir(dir).then(function(files) {
-                def.resolve(files);
-            }).fail(function(error) {
+            Gear.Files.readDir(dir)
+                .then(function(files) {
+                    return Gear.Permissions.filterFilesByUser(files, req.gearContext.currentUser);
+                })
+                .then(def.resolve)
+                .fail(function(error) {
                     def.reject(new Gear.Error(error));
-            }).done();
+                });
         }
     }).fail(function() {
         def.reject(new Gear.Error(404, 'File path was not found'));
@@ -52,7 +55,7 @@ exports.getPermissions = function(req, res) {
             def.reject(new Gear.Error('This path is not a directory, cannot get permissions', 400));
         } else {
             Gear.Users.getUserList({ admin: false }).then(function(users) {
-                Gear.Permissions.getPermissionsForUsers(Gear.Files.getRelativeFilePath(filePath), _(users).pluck('_username')).then(function(permissions) {
+                Gear.Permissions.getPermissionsForUsers(Gear.Files.getRelativeFilePath(filePath), _(users).pluck('username')).then(function(permissions) {
                     def.resolve(permissions);
                 }).fail(function(err) {
                     def.reject(err);
