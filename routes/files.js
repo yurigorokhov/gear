@@ -51,7 +51,7 @@ exports.getPermissions = function(req, res) {
         if(!stats.isDirectory()) {
             def.reject(new Gear.Error('This path is not a directory, cannot get permissions', 400));
         } else {
-            Gear.Users.getUserList().then(function(users) {
+            Gear.Users.getUserList({ admin: false }).then(function(users) {
                 Gear.Permissions.getPermissionsForUsers(Gear.Files.getRelativeFilePath(filePath), _(users).pluck('_username')).then(function(permissions) {
                     def.resolve(permissions);
                 }).fail(function(err) {

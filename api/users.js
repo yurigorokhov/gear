@@ -6,9 +6,10 @@ var encodePassword = function(pass) {
 
 _(Gear.Users).extend({
 
-    getUserList: function() {
+    getUserList: function(filter) {
+        filter = filter || {};
         var def = Q.defer();
-        db.users.find({}, function(err, users) {
+        db.users.find(filter, function(err, users) {
            if(err || !users) {
                def.reject(new Gear.Error('No users were found: ' + err));
            } else {

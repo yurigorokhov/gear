@@ -2,6 +2,9 @@ Gear.provide('Gear.Permissions');
 _(Gear.Permissions).extend({
     _permissionsMap: null,
     _defaultPermissions: { read: false, write: false },
+    _getPathSegments: function(filePath) {
+        return _(filePath).chain().split(path.sep).filter(function(p) { return !_(p).isEmpty(); }).value();
+    },
     _getPermissionsMap: function() {
         var def = Q.defer();
         var self = this;
@@ -26,7 +29,7 @@ _(Gear.Permissions).extend({
         } else {
             var userMap = self._permissionsMap[user];
             var level = userMap;
-            var segments = _(folder.split(path.sep)).filter(function(p) { return !_(p).isEmpty(); });
+            var segments = this._getPathSegments(folder);
             var permissions = self._defaultPermissions;
             for(var i = 0; i < segments.length; i++) {
                 if(level[segments[i]]) {
@@ -65,14 +68,10 @@ _(Gear.Permissions).extend({
         var def = Q.defer();
         var self = this;
         this._getPermissionsMap().then(function() {
-            if(!self._permissionsMap[user]) {
-                self._permissionsMap[user] = {};
-            }
+            self._permissionsMap = self._permissionsMap || {};
             var level = self._permissionsMap[user];
-            _(_(folder.split(path.sep)).filter(function(p) { return !_(p).isEmpty(); })).each(function(segment) {
-                if(!level[segment]) {
-                    level[segment] = {};
-                }
+            _(this._getPathSegments(folder)).each(function(segment) {
+                level[segment] = level[segment] || {};
                 if(permissions.read === true) {
                     level.permissions = { read: true, write: permissions.write || false };
                 }

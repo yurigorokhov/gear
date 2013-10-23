@@ -42,7 +42,7 @@ _(Gear.Files).extend({
             if(err) {
                  def.reject(err);
              } else {
-                var result = _(files).map(function(f) {
+                var result = _(files).chain().map(function(f) {
                     var stats = fs.statSync(path.join(dirPath, f));
                     return {
                         name: f,
@@ -51,7 +51,9 @@ _(Gear.Files).extend({
                         isDirectory: stats.isDirectory(),
                         href: '/@api/files/get?path=' + encodeURIComponent(encodeURIComponent(Gear.Files.getRelativePath(path.join(dirPath, f))))
                     };
-                });
+                }).filter(function(file) {
+                    return true;
+                }).value();
                  def.resolve(result);
              }
         });
