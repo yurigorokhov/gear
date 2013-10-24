@@ -104,8 +104,10 @@ var wrap = function(func, options) {
 };
 
 app.get('/', wrap(routes.index, { render: true, loggedin: false }));
-app.get('/filebrowser', wrap(routes.filebrowser, { render: true, loggedin: true }));
-app.get('/users', wrap(routes.users, { render: true, admin: true }));
+
+// NOTE: loggedin is false so that we can issue a proper redirect internally
+app.get('/filebrowser', wrap(routes.filebrowser, { render: true, loggedin: false }));
+app.get('/users', wrap(routes.users, { render: true, loggedin: false }));
 
 // files
 app.get('/@api/files/list', wrap(files.list));
