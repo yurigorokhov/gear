@@ -14,12 +14,19 @@ app.all('*', function(req, res) {
 
             // destination mapped to a port on localhost
             var uri = url.parse(req.url, true);
+            var headers = { authorization: req.headers.authorization, cookie: req.headers.cookie };
+            if(req.headers['content-type']) {
+                headers['content-type'] = req.headers['content-type'];
+            }
+            if(req.headers['content-length']) {
+                headers['content-length'] = req.headers['content-length'];
+            }
             var proxy_request = http.request({
                 host: 'localhost',
                 port: 3000,
                 path: uri.pathname + uri.search,
                 method: req.method,
-                headers: { authorization: req.headers.authorization, cookie: req.headers.cookie }
+                headers: headers
             }, function(proxy_response) {
                 proxy_response.pipe(res);
                 res.writeHead(proxy_response.statusCode, proxy_response.headers);
