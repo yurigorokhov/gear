@@ -13,5 +13,5 @@ ADD . /src
 # Install app dependencies
 RUN cd /src; npm install
 
-EXPOSE  8080
+EXPOSE  80
 CMD ["node", "/src/app.js"]
