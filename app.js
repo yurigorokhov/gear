@@ -4,36 +4,18 @@
  */
 
 var express = require('express')
-  , routes = require('./routes')
-  , user = require('./routes/user');
-
+  , routes = require('./routes');
 http = require('http');
 path = require('path');
 fs = require('fs');
 _ = require('underscore');
-Parse = require('node-parse-api').Parse;
 Q = require('q');
-
-// entities
-User = require('./entities/user').User;
-
-// load config
-var config = {};
-try {
-    eval(fs.readFileSync('config.js', 'utf8'));
-    console.log('read config from config.js');
-    _(config).extend(configuration);
-} catch (e) {
-    console.log('config.js does not exist (' + e.message + ')');
-    process.exit(1);
-}
 
 // init app
 var app = express();
-parseApp = new Parse(config.parseAppId, config.parseMasterKey);
 
 // all environments
-app.set('port', process.env.PORT || 3000);
+app.set('port', 8080);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(express.favicon());
@@ -50,11 +32,6 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', routes.index);
-
-
-// Users
-app.post('/@api/users', user.create);
-
 app.get('/*', function(req, res) {
     res.redirect('/');
 });

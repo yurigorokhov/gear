@@ -1,7 +1,6 @@
 extends layout
 
 block content
-    a#login-link(href='#modal-login', role='button', data-toggle='modal') Login
     span(id='header')
         img(height='160', width='289', src='/images/gearlogo.jpg')
     span.divider
@@ -29,16 +28,3 @@ block footer
     span.divider
     span(id='footer')
         #copyright ©2013 Gear Management Group
-
-block login
-    #modal-login.modal.hide.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-        .modal-header
-            button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-            h3#myModalLabel Please sign in
-        .modal-body
-            form.form-signin
-                input.input-block-level(type='text', placeholder='Email address')
-                input.input-block-level(type='password', placeholder='Password')
-        .modal-footer
-            button.btn(data-dismiss='modal', aria-hidden='true') Cancel
-            button.btn.btn-primary Login

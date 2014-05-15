@@ -1,22 +1,21 @@
-doctype 5
+doctype html
 html(ng-app='gear')
     head
-        title= title
+        title=title
         link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
         link(rel='stylesheet', href='/stylesheets/style.css')
     body
         #content-wrapper
-            block login
             block content
         #footer-wrapper
             block footer
             script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.2/jquery.min.js')
             script(src='//cdnjs.cloudflare.com/ajax/libs/angular.js/1.1.5/angular.min.js')
             script(src='/javascripts/bootstrap.min.js')
-            script
+            script.
                 angular.module('gear', []).
                   config(['$routeProvider', function($routeProvider) {
-                  $routeProvider.
+                    $routeProvider.
                       when('/about', {templateUrl: 'partials/about.html',   controller: AboutCtrl}).
                       when('/methodology', {templateUrl: 'partials/methodology.html',   controller: MethodologyCtrl}).
                       when('/services', {templateUrl: 'partials/services.html',   controller: MethodologyCtrl}).
@@ -25,7 +24,6 @@ html(ng-app='gear')
                       when('/bios', {templateUrl: 'partials/bios.html',   controller: MethodologyCtrl}).
                       when('/leed', {templateUrl: 'partials/leed.html',   controller: MethodologyCtrl}).
                       otherwise({redirectTo: '/about'});
-                }]);
-
+                  }]);
                 function AboutCtrl($scope, $routeParams) { }
                 function MethodologyCtrl($scope, $routeParams) { }
